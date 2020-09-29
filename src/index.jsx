@@ -265,12 +265,27 @@ const ImgCrop = forwardRef((props, ref) => {
       0.4
     );
   }, [hasRotate, onClose, rotateVal]);
+  
+  //  Have a custom modal container
+  const modalContainer = useMemo(() => document.createElement('div'), [])
+  useLayoutEffect(() => {
+    document.body.appendChild(modalContainer)
+    modalContainer.addEventListener('animationend', ({ animationName }) => {
+      if (animationName === 'antZoomIn') {
+        //  Reset the frame
+        setRotateVal(0.1)
+        setRotateVal(0)
+      }
+    })
+    return () => modalContainer.remove() //  Don't know if I need to remove first the listener since I destroy the element
+  }, [])
 
   const renderComponent = (titleOfModal) => (
     <>
       {renderUpload()}
       {src && (
         <Modal
+          getContainer={modalContainer}
           visible={true}
           wrapClassName={`${pkg}-modal`}
           title={titleOfModal}
